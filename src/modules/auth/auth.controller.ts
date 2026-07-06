@@ -50,7 +50,17 @@ const loginUser = catchAsync(
   },
 );
 
+const getCurrentUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?.id;
+    const result = await authServices.getCurrentUserFromDB(userId as string);
+
+    sendResponse(res, {message: "User data retrive successfully.", data: result})
+  },
+);
+
 export const authController = {
   createUser,
   loginUser,
+  getCurrentUser
 };

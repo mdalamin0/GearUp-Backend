@@ -51,7 +51,6 @@ const loginUserIntoDB = async (email: string, password: string) => {
     },
   });
 
-
   if (!user) {
     throw new Error("User not found! Please register.");
   }
@@ -60,11 +59,11 @@ const loginUserIntoDB = async (email: string, password: string) => {
     throw new Error("Your account has been suspended. Please contact support!");
   }
 
-   const matchPassword = await bcrypt.compare(password, user?.password!);
+  const matchPassword = await bcrypt.compare(password, user?.password!);
 
-   if (!matchPassword) {
-     throw new Error("Password is incorect!");
-   }
+  if (!matchPassword) {
+    throw new Error("Password is incorect!");
+  }
 
   const jwtPayload = {
     id: user.id,
@@ -84,10 +83,27 @@ const loginUserIntoDB = async (email: string, password: string) => {
     config.jwt_refresh_expires_in as SignOptions,
   );
 
-  return {accessToken, refreshToken}
+  return { accessToken, refreshToken };
+};
+
+const getCurrentUserFromDB = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    omit: {
+      password: true
+    }
+  });
+
+  if(!user){
+    throw new Error('User not found')
+  }
+  return user
 };
 
 export const authServices = {
   createUserIntoDB,
   loginUserIntoDB,
+  getCurrentUserFromDB,
 };
