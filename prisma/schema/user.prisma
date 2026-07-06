@@ -5,6 +5,8 @@ model User {
   password String
   role  Role @default(CUSTOMER)
   status UserStatus @default(ACTIVE)
+  gearItems GearItem[]
+  
   createdAt DateTime @default(now())
   updatedAT DateTime @updatedAt
 
