@@ -7,6 +7,7 @@ import globalErrorHanlder from "./middlewares/globalErrorHandler";
 import { notFound } from "./middlewares/notFound";
 import { authRoutes } from "./modules/auth/auth.route";
 import { categoryRoutes } from "./modules/category/category.route";
+import { providerGearRoutes } from "./modules/gearItem/providerGear.routes";
 
 const app: Application = express();
 
@@ -36,6 +37,8 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/auth", authRoutes)
 app.use("/api/categories", categoryRoutes);
+app.use("/api/provider/gear", providerGearRoutes);
+
 
 app.use(notFound)
 app.use(globalErrorHanlder);
