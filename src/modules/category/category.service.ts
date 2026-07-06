@@ -71,8 +71,37 @@ const updateCategoryIntoDB = async (name: string, id: string) => {
   return updatedCategory;
 };
 
+const deleteCategoryFromDB = async(id: string) => {
+  const category = await prisma.category.findUnique({
+    where: {
+      id
+    }
+  })
+
+  if(!category){
+    throw new Error("Category not found!")
+  }
+
+  const gearCount = await prisma.gearItem.count({
+    where: {
+      categoryId: id,
+    },
+  });
+
+  if (gearCount > 0) {
+    throw new Error("Cannot delete category because it contains gear items.");
+  }
+
+  await prisma.category.delete({
+    where: {
+      id
+    }
+  })
+}
+
 export const categoryServices = {
   createCategoryIntoDB,
   getCategoriesFromDB,
   updateCategoryIntoDB,
+  deleteCategoryFromDB
 };
