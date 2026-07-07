@@ -1,4 +1,4 @@
- enum Role {
+enum Role {
   CUSTOMER
   PROVIDER
   ADMIN
@@ -7,4 +7,31 @@
 enum UserStatus {
   ACTIVE
   SUSPENDED
+}
+
+enum OrderStatus {
+  PLACED
+  CONFIRMED
+  PAID
+  PICKED_UP
+  RETURNED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CARD
+  BANK
+  MOBILE_BANKING
+}
+
+enum PaymentGateway  {
+  STRIPE
+  SSLCOMMERZ
 }

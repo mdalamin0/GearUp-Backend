@@ -6,6 +6,7 @@ model User {
   role  Role @default(CUSTOMER)
   status UserStatus @default(ACTIVE)
   gearItems GearItem[]
+  rentalOrders RentalOrder[]
   
   createdAt DateTime @default(now())
   updatedAT DateTime @updatedAt
