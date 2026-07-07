@@ -21,6 +21,17 @@ const createGearItem = catchAsync(
   },
 );
 
+const getAllGear = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const query = req.query;
+
+    const result = await gearItemServices.getAllGearFromDB(query);
+
+    sendResponse(res, { message: "Gears retrive successfully", data: result });
+  },
+);
+
 export const gearItemController = {
   createGearItem,
+  getAllGear,
 };

@@ -1,3 +1,5 @@
+import { GearItemWhereInput } from "../../../generated/prisma/models";
+
 export interface ICreateGearItem {
   title: string;
   description: string;
@@ -7,4 +9,15 @@ export interface ICreateGearItem {
   stock: number;
   image: string;
   categoryId: string;
+}
+
+export interface IGearItemsQuery {
+  searchTerm?: string;
+  brand?: string;
+  category?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  available?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }
