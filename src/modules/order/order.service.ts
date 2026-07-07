@@ -1,3 +1,4 @@
+import { OrderStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { OrderPayload } from "./order.interface";
 
@@ -128,9 +129,46 @@ const getProviderOrdersFromDB = async (providerId: string) => {
       customer: true,
       gearItem: true,
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
-  return orders
+  return orders;
+};
+
+const updateOrderStatus = async (
+  providerId: string,
+  orderId: string,
+  status: OrderStatus,
+) => {
+  const order = await prisma.rentalOrder.findUnique({
+    where: {
+      id: orderId,
+    },
+    include: {
+      gearItem: true,
+    },
+  });
+
+  if (!order) {
+    throw new Error("Order not found!");
+  }
+
+  if (order.gearItem.providerId !== providerId) {
+    throw new Error("Forbidden. You are not the owner of this gear.");
+  }
+
+  const updatedOrder = await prisma.rentalOrder.update({
+    where: {
+      id: orderId,
+    },
+    data: {
+      status,
+    },
+  });
+
+  return updatedOrder;
 };
 
 export const orderServices = {
@@ -138,4 +176,5 @@ export const orderServices = {
   getCustomerOrders,
   getSingleOrderFromDB,
   getProviderOrdersFromDB,
+  updateOrderStatus,
 };

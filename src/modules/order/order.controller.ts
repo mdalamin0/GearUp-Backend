@@ -50,7 +50,6 @@ const getSingleOrder = catchAsync(
   },
 );
 
-
 const getProviderOrders = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const providerId = req.user?.id;
@@ -61,9 +60,27 @@ const getProviderOrders = catchAsync(
   },
 );
 
+const updateOrderStatus = catchAsync(async (req, res) => {
+  const providerId = req.user?.id;
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const result = await orderServices.updateOrderStatus(
+    providerId as string,
+    id as string,
+    status,
+  );
+
+  sendResponse(res, {
+    message: "Order status updated successfully.",
+    data: result,
+  });
+});
+
 export const orderController = {
   creatOrder,
   getCustomerOrders,
   getSingleOrder,
-  getProviderOrders
+  getProviderOrders,
+  updateOrderStatus
 };

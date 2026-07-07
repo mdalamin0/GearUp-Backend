@@ -15,7 +15,11 @@ router.get(
   auth(Role.PROVIDER),
   orderController.getProviderOrders,
 );
-// GET   /api/provider/orders
-// PATCH /api/provider/orders/:id
+
+router.patch(
+  "/provider/orders/:id",
+  auth(Role.PROVIDER),
+  orderController.updateOrderStatus,
+);
 
 export const orderRoutes = router;
