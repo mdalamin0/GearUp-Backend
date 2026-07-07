@@ -50,8 +50,20 @@ const getSingleOrder = catchAsync(
   },
 );
 
+
+const getProviderOrders = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const providerId = req.user?.id;
+
+    const result = await orderServices.getProviderOrdersFromDB(providerId as string);
+
+    sendResponse(res, {message: "Orders retrive successfully.", data: result})
+  },
+);
+
 export const orderController = {
   creatOrder,
   getCustomerOrders,
-  getSingleOrder
+  getSingleOrder,
+  getProviderOrders
 };

@@ -41,7 +41,7 @@ app.use("/api/auth", authRoutes)
 app.use("/api/categories", categoryRoutes);
 app.use("/api/provider/gear", providerGearRoutes);
 app.use("/api/gears", gearRoutes);
-app.use("/api/rentals", orderRoutes);
+app.use("/api", orderRoutes);
 
 
 app.use(notFound)

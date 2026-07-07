@@ -117,8 +117,25 @@ const getSingleOrderFromDB = async (orderId: string, customerId: string) => {
   return order;
 };
 
+const getProviderOrdersFromDB = async (providerId: string) => {
+  const orders = await prisma.rentalOrder.findMany({
+    where: {
+      gearItem: {
+        providerId,
+      },
+    },
+    include: {
+      customer: true,
+      gearItem: true,
+    },
+  });
+
+  return orders
+};
+
 export const orderServices = {
   creatOrderIntoDB,
   getCustomerOrders,
-  getSingleOrderFromDB
+  getSingleOrderFromDB,
+  getProviderOrdersFromDB,
 };
