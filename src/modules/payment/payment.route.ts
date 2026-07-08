@@ -7,5 +7,6 @@ const router = Router();
 
 
 router.post("/create/:id", auth(Role.CUSTOMER), paymentController.initiatePayment)
+router.post("/", paymentController.verifyPayment)
 
 export const paymentRoutes = router;

@@ -1,8 +1,9 @@
 import { JwtPayload } from "jsonwebtoken";
-import config from "../../config";
 import { prisma } from "../../lib/prisma";
 import axios from "axios";
 import { randomUUID } from "crypto";
+import config from "../../config";
+import { Prisma } from "../../../generated/prisma/client";
 
 const initiatePayment = async (orderId: string, user: JwtPayload) => {
   const order = await prisma.rentalOrder.findUnique({
@@ -19,16 +20,16 @@ const initiatePayment = async (orderId: string, user: JwtPayload) => {
     throw new Error("Forbidden. You are not the owner of this order.");
   }
 
-  const existingPayment = await prisma.payment.findFirst({
-    where: {
-      orderId,
-      status: "PENDING",
-    },
-  });
+  // const existingPayment = await prisma.payment.findFirst({
+  //   where: {
+  //     orderId,
+  //     status: "PENDING",
+  //   },
+  // });
 
-  if (existingPayment) {
-    throw new Error("Payment already initiated for this order.");
-  }
+  // // if (existingPayment) {
+  // //   throw new Error("Payment already initiated for this order.");
+  // // }
 
   const tranId = `TRNX_${randomUUID()}`;
 
@@ -79,6 +80,98 @@ const initiatePayment = async (orderId: string, user: JwtPayload) => {
   return { PayementUrl: GatewayPageURL };
 };
 
+const verifyPayment = async (
+  orderId: string,
+  tranId: string,
+  status: string,
+  payload: Record<string, unknown>,
+) => {
+  const payment = await prisma.payment.findUnique({
+    where: {
+      transactionId: tranId,
+    },
+  });
+
+  if (!payment) {
+    throw new Error("Payment not found.");
+  }
+
+   if (status === "cancel") {
+     await prisma.$transaction(async (tx) => {
+       await tx.rentalOrder.update({
+         where: {
+           id: orderId,
+         },
+         data: {
+           status: "CANCELLED",
+         },
+       });
+
+       await tx.payment.update({
+         where: {
+           transactionId: tranId,
+         },
+         data: {
+           status: "CANCELLED",
+           meta: payload as Prisma.InputJsonValue,
+         },
+       });
+     });
+
+     return "cancel";
+   }
+
+  const valId = payload.val_id as string;
+
+  const response = await axios.get(
+    `https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php?val_id=${valId}&store_id=${config.ssl_commerz_store_id}&store_passwd=${config.ssl_commerz_store_password}&format=json`,
+  );
+
+  const data = response.data;
+
+  if (data.status === "VALID" || data.status === "VALIDATED") {
+    await prisma.$transaction(async (tx) => {
+      await tx.rentalOrder.update({
+        where: { id: orderId },
+        data: {
+          status: "PAID",
+        },
+      });
+
+      await tx.payment.update({
+        where: { transactionId: tranId },
+        data: {
+          status: "PAID",
+          paidAt: new Date(),
+          meta: payload as Prisma.InputJsonValue,
+        },
+      });
+    });
+
+    return "success";
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.rentalOrder.update({
+      where: { id: orderId },
+      data: {
+        status: "FAILED",
+      },
+    });
+
+    await tx.payment.update({
+      where: { transactionId: tranId },
+      data: {
+        status: "FAILED",
+        meta: payload as Prisma.InputJsonValue,
+      },
+    });
+  });
+
+  return "failed";
+};
+
 export const paymentServices = {
   initiatePayment,
+  verifyPayment,
 };

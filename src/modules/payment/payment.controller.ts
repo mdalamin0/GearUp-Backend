@@ -21,6 +21,40 @@ const initiatePayment = catchAsync(
   },
 );
 
+const verifyPayment = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { orderId, tranId, status } = req.query;
+
+    const payload = req.body;
+
+    const response = await paymentServices.verifyPayment(
+      orderId as string,
+      tranId as string,
+      status as string,
+      payload,
+    );
+
+    if (response === "success") {
+      res.status(200).json({
+        success: true,
+        paymentStatus: "PAID",
+        message: "Payment successful",
+      });
+    } else if (response === "failed") {
+      return res.status(400).json({
+        success: false,
+        message: "Payment failed",
+      });
+    } else if (response === "cancel") {
+      return res.status(400).json({
+        success: false,
+        message: "Payment cancelled",
+      });
+    }
+  },
+);
+
 export const paymentController = {
   initiatePayment,
+  verifyPayment,
 };
