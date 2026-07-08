@@ -11,6 +11,7 @@ import { providerGearRoutes } from "./modules/gearItem/providerGear.routes";
 import { gearRoutes } from "./modules/gearItem/gear.routes";
 import { orderRoutes } from "./modules/order/order.route";
 import { adminRoutes } from "./modules/admin/admin.route";
+import { paymentRoutes } from "./modules/payment/payment.route";
 
 const app: Application = express();
 
@@ -44,7 +45,7 @@ app.use("/api/provider/gear", providerGearRoutes);
 app.use("/api/gears", gearRoutes);
 app.use("/api", orderRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/payments", adminRoutes);
+app.use("/api/payments", paymentRoutes);
 
 
 app.use(notFound)
