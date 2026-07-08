@@ -15,6 +15,7 @@ model GearItem {
   category   Category @relation(fields: [categoryId], references: [id])
 
   rentalOrders RentalOrder[]
+  reviews Review[]
 
   createdAt DateTime @default(now())
   updatedAT DateTime @updatedAt

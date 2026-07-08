@@ -7,6 +7,7 @@ model User {
   status UserStatus @default(ACTIVE)
   gearItems GearItem[]
   rentalOrders RentalOrder[]
+  reviews Review[]
   
   createdAt DateTime @default(now())
   updatedAT DateTime @updatedAt
