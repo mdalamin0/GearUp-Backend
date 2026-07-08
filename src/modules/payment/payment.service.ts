@@ -129,6 +129,9 @@ const verifyPayment = async (
 
   const data = response.data;
 
+  const cardType = data.card_type as string;
+  const method = cardType.split("-")[0];
+
   if (data.status === "VALID" || data.status === "VALIDATED") {
     await prisma.$transaction(async (tx) => {
       await tx.rentalOrder.update({
@@ -143,6 +146,8 @@ const verifyPayment = async (
         data: {
           status: "PAID",
           paidAt: new Date(),
+          gateway: "SSLCOMMERZ",
+          method: method,
           meta: payload as Prisma.InputJsonValue,
         },
       });
@@ -171,7 +176,31 @@ const verifyPayment = async (
   return "failed";
 };
 
+const getUsersPaymentHistory = async(userId: string) => {
+   const payments = await prisma.payment.findMany({
+     where: {
+       order: {
+         customerId: userId,
+       },
+     },
+     include: {
+       order: {
+         include: {
+           gearItem: true,
+         },
+       },
+     },
+     orderBy: {
+       createdAt: "desc",
+     },
+   });
+
+   return payments;
+}
+
+
 export const paymentServices = {
   initiatePayment,
   verifyPayment,
+  getUsersPaymentHistory
 };

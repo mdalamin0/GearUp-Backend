@@ -17,7 +17,7 @@ const initiatePayment = catchAsync(
     sendResponse(res, {
       message: "Payment initiate successfully",
       data: result,
-    });
+    },201);
   },
 );
 
@@ -54,7 +54,22 @@ const verifyPayment = catchAsync(
   },
 );
 
+const getUsersPaymentHistory = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?.id;
+
+    const result = await paymentServices.getUsersPaymentHistory(
+      userId as string,
+    );
+    sendResponse(res, {
+      message: "Payment history retrive successfully.",
+      data: result,
+    });
+  },
+);
+
 export const paymentController = {
   initiatePayment,
   verifyPayment,
+  getUsersPaymentHistory,
 };
