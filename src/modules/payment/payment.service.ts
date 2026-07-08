@@ -198,9 +198,34 @@ const getUsersPaymentHistory = async(userId: string) => {
    return payments;
 }
 
+const getSinglePayment = async (paymentId: string, userId: string) => {
+  const payment = await prisma.payment.findUnique({
+    where: {
+      id: paymentId,
+    },
+    include: {
+      order: {
+        include: {
+          gearItem: true,
+        },
+      },
+    },
+  });
+
+  if (!payment) {
+    throw new Error("Payment not found.");
+  }
+
+  if (payment.order.customerId !== userId) {
+    throw new Error("Forbidden. You are not the owner of this payment.");
+  }
+
+  return payment;
+};
 
 export const paymentServices = {
   initiatePayment,
   verifyPayment,
-  getUsersPaymentHistory
+  getUsersPaymentHistory,
+  getSinglePayment
 };

@@ -14,10 +14,14 @@ const initiatePayment = catchAsync(
       user as JwtPayload,
     );
 
-    sendResponse(res, {
-      message: "Payment initiate successfully",
-      data: result,
-    },201);
+    sendResponse(
+      res,
+      {
+        message: "Payment initiate successfully",
+        data: result,
+      },
+      201,
+    );
   },
 );
 
@@ -68,8 +72,29 @@ const getUsersPaymentHistory = catchAsync(
   },
 );
 
+const getSinglePayment = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?.id;
+    const { id } = req.params;
+
+    const result = await paymentServices.getSinglePayment(
+      id as string,
+      userId as string,
+    );
+
+    sendResponse(
+      res,
+      {
+        message: "Single Payment retrieved successfully",
+        data: result,
+      }
+    );
+  },
+);
+
 export const paymentController = {
   initiatePayment,
   verifyPayment,
   getUsersPaymentHistory,
+  getSinglePayment
 };
