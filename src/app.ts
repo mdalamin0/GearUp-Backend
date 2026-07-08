@@ -44,6 +44,7 @@ app.use("/api/provider/gear", providerGearRoutes);
 app.use("/api/gears", gearRoutes);
 app.use("/api", orderRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/payments", adminRoutes);
 
 
 app.use(notFound)
