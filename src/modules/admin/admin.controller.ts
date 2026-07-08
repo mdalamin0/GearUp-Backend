@@ -16,10 +16,7 @@ const updateUserStatus = catchAsync(
     const { id } = req.params;
     const { status } = req.body;
 
-    const result = await adminService.updateUserStatus(
-      id as string,
-      status,
-    );
+    const result = await adminService.updateUserStatus(id as string, status);
 
     sendResponse(res, {
       message: "Status updated successfully.",
@@ -28,7 +25,28 @@ const updateUserStatus = catchAsync(
   },
 );
 
+const getAllGears = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await adminService.getAllGears();
+
+    sendResponse(res, { message: "Gears retrive successfully.", data: result });
+  },
+);
+
+const getAllRentals = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await adminService.getAllRentals();
+
+    sendResponse(res, {
+      message: "Reantal orders retrive successfully.",
+      data: result,
+    });
+  },
+);
+
 export const adminController = {
   getAllUsers,
   updateUserStatus,
+  getAllGears,
+  getAllRentals,
 };

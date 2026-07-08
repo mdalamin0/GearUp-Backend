@@ -30,6 +30,10 @@ const updateUserStatus = async (userId: string, status: UserStatus) => {
     throw new Error("User not found!");
   }
 
+  if (user.status === status) {
+    throw new Error("Status already updated.");
+  }
+
   const updatedUser = await prisma.user.update({
     where: {
       id: userId,
@@ -37,12 +41,57 @@ const updateUserStatus = async (userId: string, status: UserStatus) => {
     data: {
       status,
     },
+    omit: {
+      password: true,
+    },
   });
 
   return updatedUser;
 };
 
+const getAllGears = async () => {
+  const gears = await prisma.gearItem.findMany({
+    include: {
+      provider: {
+        omit: {
+          password: true,
+        },
+      },
+      category: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return gears;
+};
+
+const getAllRentals = async () => {
+  const rentals = await prisma.rentalOrder.findMany({
+    include: {
+      customer: {
+        omit: {
+          password: true,
+        },
+      },
+      gearItem: {
+        include: {
+          category: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return rentals;
+};
+
 export const adminService = {
   getAllUsers,
-  updateUserStatus
+  updateUserStatus,
+  getAllGears,
+  getAllRentals
 };
