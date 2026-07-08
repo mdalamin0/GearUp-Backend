@@ -159,7 +159,7 @@ const updateOrderStatus = async (
     throw new Error("Forbidden. You are not the owner of this gear.");
   }
 
-  const allowedStatus = ["CONFIRMED", "PAID", "PICKED_UP", "RETURNED", "CANCELLED"];
+  const allowedStatus = ["CONFIRMED",  "PICKED_UP", "RETURNED"];
 
   if (!allowedStatus.includes(status)) {
     throw new Error("Invalid order status");
