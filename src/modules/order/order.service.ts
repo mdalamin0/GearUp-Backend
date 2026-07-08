@@ -159,6 +159,16 @@ const updateOrderStatus = async (
     throw new Error("Forbidden. You are not the owner of this gear.");
   }
 
+  const allowedStatus = ["CONFIRMED", "PAID", "PICKED_UP", "RETURNED", "CANCELLED"];
+
+  if (!allowedStatus.includes(status)) {
+    throw new Error("Invalid order status");
+  }
+
+  if (order.status === status) {
+    throw new Error("Status already updated.");
+  }
+
   const updatedOrder = await prisma.rentalOrder.update({
     where: {
       id: orderId,
