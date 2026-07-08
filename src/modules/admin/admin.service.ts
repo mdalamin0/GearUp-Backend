@@ -1,4 +1,4 @@
-import { Role } from "../../../generated/prisma/enums";
+import { Role, UserStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 
 const getAllUsers = async () => {
@@ -12,13 +12,37 @@ const getAllUsers = async () => {
       password: true,
     },
     orderBy: {
-      createdAt: "desc"
-    }
+      createdAt: "desc",
+    },
   });
 
-  return users
+  return users;
+};
+
+const updateUserStatus = async (userId: string, status: UserStatus) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new Error("User not found!");
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      status,
+    },
+  });
+
+  return updatedUser;
 };
 
 export const adminService = {
   getAllUsers,
+  updateUserStatus
 };
