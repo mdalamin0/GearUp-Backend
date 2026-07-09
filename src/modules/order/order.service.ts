@@ -159,7 +159,15 @@ const updateOrderStatus = async (
     throw new Error("Forbidden. You are not the owner of this gear.");
   }
 
-  const allowedStatus = ["CONFIRMED",  "PICKED_UP", "RETURNED"];
+  const allowedStatus = ["CONFIRMED", "PICKED_UP", "RETURNED"];
+
+  if (status === "RETURNED") {
+    const today = new Date();
+
+    if (today < order.endDate) {
+      throw new Error("Cannot mark as returned before the rental end date.");
+    }
+  }
 
   if (!allowedStatus.includes(status)) {
     throw new Error("Invalid order status");
