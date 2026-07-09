@@ -2,9 +2,19 @@
 
 A role-based backend API for an outdoor gear rental platform where customers can rent equipment, providers can manage gear listings and orders, and administrators can oversee platform activities.
 
+## Live Server
+https://your-live-server-link.com
+
+## API Base URL
+https://your-live-server-link.com/api
+
+## GitHub Repository
+https://github.com/mdalamin0/your-repository-name
+
 ## Project Overview
 
 The Outdoor Gear Rental API allows customers to rent outdoor equipment, providers to manage gear inventory and rental requests, and administrators to monitor the platform. The system includes authentication, rental management, payment processing, and customer reviews.
+
 
 ## Features
 
