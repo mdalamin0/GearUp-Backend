@@ -162,6 +162,9 @@ The Outdoor Gear Rental API allows customers to rent outdoor equipment, provider
 | Method | Endpoint |
 |---------|----------|
 | POST | `/api/reviews` |
+| GET | `/api/reviews/:gearId` |
+| PATCH | `/api/reviews/:id` |
+| DELETE | `/api/reviews/:id` |
 
 ### Admin
 
