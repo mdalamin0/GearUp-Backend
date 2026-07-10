@@ -3,13 +3,13 @@
 A role-based backend API for an outdoor gear rental platform where customers can rent equipment, providers can manage gear listings and orders, and administrators can oversee platform activities.
 
 ## Live Server
-https://your-live-server-link.com
+https://gearup-backend-szbl.onrender.com
 
 ## API Base URL
-https://your-live-server-link.com/api
+https://gearup-backend-szbl.onrender.com
 
 ## GitHub Repository
-https://github.com/mdalamin0/your-repository-name
+https://github.com/mdalamin0/GearUp-Backend
 
 ## Project Overview
 

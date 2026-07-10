@@ -1,11 +1,11 @@
 import { prisma } from "../../lib/prisma";
-import { IReviewPayload } from "./review.interface";
+import { IReviewPayload, IUpdateReviewPayload } from "./review.interface";
 
 const createReviewIntoDB = async (
   customerId: string,
   payload: IReviewPayload,
 ) => {
-  const {gearItemId, rating, comment} = payload;
+  const { gearItemId, rating, comment } = payload;
   const gear = await prisma.gearItem.findUnique({
     where: {
       id: gearItemId,
@@ -32,7 +32,6 @@ const createReviewIntoDB = async (
     throw new Error("You can review only after returning the rented gear.");
   }
 
-
   const review = await prisma.review.create({
     data: {
       customerId,
@@ -42,15 +41,98 @@ const createReviewIntoDB = async (
     },
     include: {
       customer: {
-        omit: {password: true}
+        omit: { password: true },
       },
-       gearItem: true
-    }
+      gearItem: true,
+    },
   });
 
   return review;
 };
 
+const getReviews = async (gearId: string) => {
+  const gear = await prisma.gearItem.findUnique({
+    where: {
+      id: gearId,
+    },
+  });
+
+  if (!gear) {
+    throw new Error("Gear item not found!");
+  }
+
+  const reviews = await prisma.review.findMany({
+    where: {
+      gearItemId: gearId,
+    },
+    include: {
+      customer: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
+
+  return reviews;
+};
+
+const updateReview = async (
+  reviewId: string,
+  customerId: string,
+  payload: IUpdateReviewPayload,
+) => {
+  const review = await prisma.review.findUnique({
+    where: {
+      id: reviewId,
+    },
+  });
+
+  if (!review) {
+    throw new Error("Review not found.");
+  }
+
+  if (review.customerId !== customerId) {
+    throw new Error("Forbidden. You are not the owner of this review.");
+  }
+
+  const updatedReview = await prisma.review.update({
+    where: {
+      id: reviewId,
+    },
+    data: payload,
+  });
+
+  return updatedReview;
+};
+
+const deleteReview = async (reviewId: string, customerId: string) => {
+  const review = await prisma.review.findUnique({
+    where: {
+      id: reviewId,
+    },
+  });
+
+  if (!review) {
+    throw new Error("Review not found.");
+  }
+
+  if (review.customerId !== customerId) {
+    throw new Error("Forbidden.");
+  }
+
+  await prisma.review.delete({
+    where: {
+      id: reviewId,
+    },
+  });
+
+};
+
 export const reviewServices = {
   createReviewIntoDB,
+  getReviews,
+  updateReview,
+  deleteReview
 };

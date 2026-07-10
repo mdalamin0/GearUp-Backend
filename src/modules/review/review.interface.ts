@@ -1,5 +1,10 @@
 export interface IReviewPayload {
   gearItemId: string;
   rating: number;
-  comment: string
-};
+  comment: string;
+}
+
+export interface IUpdateReviewPayload {
+  rating?: number;
+  comment?: string;
+}

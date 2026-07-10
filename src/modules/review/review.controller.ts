@@ -8,8 +8,8 @@ const createReview = catchAsync(
     const customerId = req.user?.id;
     const payload = req.body;
 
-    if(!payload.gearItemId || !payload.rating || !payload.comment){
-      throw new Error("Gear item id, raing and comment are required.")
+    if (!payload.gearItemId || !payload.rating || !payload.comment) {
+      throw new Error("Gear item id, raing and comment are required.");
     }
 
     const result = await reviewServices.createReviewIntoDB(
@@ -25,6 +25,51 @@ const createReview = catchAsync(
   },
 );
 
+const getReviews = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+
+    const result = await reviewServices.getReviews(id as string);
+    sendResponse(res, {
+      message: "Reviews retrived successfully.",
+      data: result,
+    });
+  },
+);
+
+const updateReview = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const customerId = req.user?.id;
+    const { id } = req.params;
+    const payload = req.body;
+
+    const result = await reviewServices.updateReview(
+      id as string,
+      customerId as string,
+      payload,
+    );
+
+    sendResponse(res, {
+      message: "Review updated successfully.",
+      data: result,
+    });
+  },
+);
+
+const deleteReview = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const customerId = req.user?.id;
+
+    await reviewServices.deleteReview(id as string, customerId as string);
+
+    sendResponse(res, {message: "Review deleted successfully."})
+  },
+);
+
 export const reviewController = {
   createReview,
+  getReviews,
+  updateReview,
+  deleteReview,
 };
