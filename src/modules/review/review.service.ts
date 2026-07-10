@@ -119,7 +119,7 @@ const deleteReview = async (reviewId: string, customerId: string) => {
   }
 
   if (review.customerId !== customerId) {
-    throw new Error("Forbidden.");
+    throw new Error("Forbidden. You are not the owner of this review");
   }
 
   await prisma.review.delete({
