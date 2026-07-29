@@ -38,6 +38,10 @@ const createGearItemIntoDB = async (
 };
 
 const getAllGearFromDB = async (query: IGearItemsQuery) => {
+  const limit = query.limit ? Number(query.limit) : 10;
+  const page = query.page ? Number(query.page) : 1;
+  const skip = (page - 1) * limit;
+
   const sortBy = query.sortBy ? query.sortBy : "createdAt";
   const sortOrder = query.sortOrder ? query.sortOrder : "desc";
 
@@ -68,6 +72,11 @@ const getAllGearFromDB = async (query: IGearItemsQuery) => {
         equals: query.brand,
         mode: "insensitive",
       },
+    });
+  }
+  if (query.isFeatured) {
+    andConditions.push({
+      isFeatured: true,
     });
   }
 
@@ -101,10 +110,18 @@ const getAllGearFromDB = async (query: IGearItemsQuery) => {
     });
   }
 
+  const totalGears = await prisma.gearItem.count({
+    where: {
+      AND: andConditions,
+    },
+  });
+
   const gears = await prisma.gearItem.findMany({
     where: {
       AND: andConditions,
     },
+    take: limit,
+    skip: skip,
     orderBy: {
       [sortBy]: sortOrder,
     },
@@ -113,7 +130,15 @@ const getAllGearFromDB = async (query: IGearItemsQuery) => {
     },
   });
 
-  return gears;
+  return {
+    data: gears,
+    meta: {
+      page: page,
+      limit: limit,
+      total: totalGears,
+      totalPages: Math.ceil(totalGears / limit),
+    },
+  };
 };
 
 const getSingleGearItemFromDB = async (id: string) => {

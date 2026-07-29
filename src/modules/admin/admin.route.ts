@@ -8,6 +8,11 @@ const router = Router();
 router.get("/users", auth(Role.ADMIN), adminController.getAllUsers);
 
 router.patch("/users/:id", auth(Role.ADMIN), adminController.updateUserStatus);
+router.patch(
+  "/gears/:id/featured",
+  auth(Role.ADMIN),
+  adminController.updateGearFeatured,
+);
 
 router.get("/gears", auth(Role.ADMIN), adminController.getAllGears);
 

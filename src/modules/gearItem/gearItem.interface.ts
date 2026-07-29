@@ -18,6 +18,9 @@ export interface IGearItemsQuery {
   maxPrice?: string;
   available?: string;
   sortBy?: string;
+  limit?: string;
+  page?: string;
+  isFeatured?: boolean;
   sortOrder?: "asc" | "desc";
 }
 

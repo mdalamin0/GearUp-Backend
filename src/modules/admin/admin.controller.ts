@@ -25,9 +25,37 @@ const updateUserStatus = catchAsync(
   },
 );
 
+const updateGearFeatured = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const { isFeatured } = req.body;
+
+   if (isFeatured === undefined) {
+     throw new Error("isFeatured is required.");
+   }
+   
+   if (typeof isFeatured !== "boolean") {
+     throw new Error("isFeatured must be a boolean.");
+   }
+
+    const result = await adminService.updateGearFeatured(
+      id as string,
+      isFeatured,
+    );
+
+    sendResponse(res, {
+      message: `Gear ${
+        result.isFeatured ? "featured" : "removed from featured"
+      } successfully.`,
+      data: result,
+    });
+  },
+);
+
 const getAllGears = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await adminService.getAllGears();
+    const query = req.query;
+    const result = await adminService.getAllGears(query);
 
     sendResponse(res, { message: "Gears retrive successfully.", data: result });
   },
@@ -47,6 +75,7 @@ const getAllRentals = catchAsync(
 export const adminController = {
   getAllUsers,
   updateUserStatus,
+  updateGearFeatured,
   getAllGears,
   getAllRentals,
 };
