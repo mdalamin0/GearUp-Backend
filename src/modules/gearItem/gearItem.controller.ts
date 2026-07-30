@@ -31,6 +31,16 @@ const getAllGear = catchAsync(
   },
 );
 
+const getAllGearBrands = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+
+    const result = await gearItemServices.getAllGearBrands();
+
+    sendResponse(res, { message: "Gears brands retribe successfully", data: result });
+  },
+);
+
+
 const getSingleGearItem = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
@@ -77,6 +87,7 @@ export const gearItemController = {
   createGearItem,
   getAllGear,
   getSingleGearItem,
+  getAllGearBrands,
   updateGearItem,
   deleteGear,
 };

@@ -141,6 +141,16 @@ const getAllGearFromDB = async (query: IGearItemsQuery) => {
   };
 };
 
+const getAllGearBrands = async() => {
+  const brands = await prisma.gearItem.findMany({
+    distinct: ["brand"],
+    select: {
+      brand: true,
+    },
+  });
+  return brands.map((item) => item.brand);
+}
+
 const getSingleGearItemFromDB = async (id: string) => {
   const item = await prisma.gearItem.findUnique({
     where: {
@@ -251,6 +261,7 @@ const deleteGearFromDB = async (id: string, providerId: string) => {
 export const gearItemServices = {
   createGearItemIntoDB,
   getAllGearFromDB,
+  getAllGearBrands,
   getSingleGearItemFromDB,
   updateGearItemIntoDB,
   deleteGearFromDB,

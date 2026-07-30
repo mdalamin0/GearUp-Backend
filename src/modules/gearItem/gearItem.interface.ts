@@ -21,6 +21,9 @@ export interface IGearItemsQuery {
   limit?: string;
   page?: string;
   isFeatured?: boolean;
+  startDate?: string;
+  endDate?: string;
+  quantity?: string;
   sortOrder?: "asc" | "desc";
 }
 

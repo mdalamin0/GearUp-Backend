@@ -161,6 +161,14 @@ const updateOrderStatus = async (
 
   const allowedStatus = ["CONFIRMED", "PICKED_UP", "RETURNED"];
 
+  if (!allowedStatus.includes(status)) {
+    throw new Error("Invalid order status.");
+  }
+
+  if (order.status === status) {
+    throw new Error("Status already updated.");
+  }
+
   if (status === "RETURNED") {
     const today = new Date();
 
@@ -169,24 +177,33 @@ const updateOrderStatus = async (
     }
   }
 
-  if (!allowedStatus.includes(status)) {
-    throw new Error("Invalid order status");
-  }
+  const result = await prisma.$transaction(async (tx) => {
+    const updatedOrder = await tx.rentalOrder.update({
+      where: {
+        id: orderId,
+      },
+      data: {
+        status,
+      },
+    });
 
-  if (order.status === status) {
-    throw new Error("Status already updated.");
-  }
+    if (status === "RETURNED") {
+      await tx.gearItem.update({
+        where: {
+          id: order.gearItemId,
+        },
+        data: {
+          stock: {
+            increment: order.quantity,
+          }, 
+        },
+      });
+    }
 
-  const updatedOrder = await prisma.rentalOrder.update({
-    where: {
-      id: orderId,
-    },
-    data: {
-      status,
-    },
+    return updatedOrder;
   });
 
-  return updatedOrder;
+  return result;
 };
 
 export const orderServices = {
