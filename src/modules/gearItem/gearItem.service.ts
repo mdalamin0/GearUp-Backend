@@ -127,11 +127,33 @@ const getAllGearFromDB = async (query: IGearItemsQuery) => {
     },
     include: {
       category: true,
+      reviews: {
+        select: {
+          comment: true,
+          rating: true,
+        },
+      },
     },
   });
 
+  const formattedGear = gears.map((gear) => {
+    const reviewCount = gear.reviews.length;
+
+    const averageRating =
+      reviewCount > 0
+        ? gear.reviews.reduce((sum, review) => sum + review.rating, 0) /
+          reviewCount
+        : 0;
+
+    return {
+      ...gear,
+      reviewCount,
+      averageRating: Number(averageRating.toFixed(1)),
+    };
+  });
+
   return {
-    data: gears,
+    data: formattedGear,
     meta: {
       page: page,
       limit: limit,
@@ -141,7 +163,7 @@ const getAllGearFromDB = async (query: IGearItemsQuery) => {
   };
 };
 
-const getAllGearBrands = async() => {
+const getAllGearBrands = async () => {
   const brands = await prisma.gearItem.findMany({
     distinct: ["brand"],
     select: {
@@ -149,7 +171,7 @@ const getAllGearBrands = async() => {
     },
   });
   return brands.map((item) => item.brand);
-}
+};
 
 const getSingleGearItemFromDB = async (id: string) => {
   const item = await prisma.gearItem.findUnique({

@@ -20,16 +20,6 @@ const initiatePayment = async (orderId: string, user: JwtPayload) => {
     throw new Error("Forbidden. You are not the owner of this order.");
   }
 
-  // const existingPayment = await prisma.payment.findFirst({
-  //   where: {
-  //     orderId,
-  //     status: "PENDING",
-  //   },
-  // });
-
-  // // if (existingPayment) {
-  // //   throw new Error("Payment already initiated for this order.");
-  // // }
 
   const tranId = `TRNX_${randomUUID()}`;
 

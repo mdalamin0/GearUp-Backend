@@ -3,6 +3,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { paymentServices } from "./payment.service";
 import { JwtPayload } from "jsonwebtoken";
 import sendResponse from "../../utils/sendResponse";
+import config from "../../config";
 
 const initiatePayment = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -38,23 +39,17 @@ const verifyPayment = catchAsync(
       payload,
     );
 
-    if (response === "success") {
-      res.status(200).json({
-        success: true,
-        paymentStatus: "PAID",
-        message: "Payment successful",
-      });
-    } else if (response === "failed") {
-      return res.status(400).json({
-        success: false,
-        message: "Payment failed",
-      });
-    } else if (response === "cancel") {
-      return res.status(400).json({
-        success: false,
-        message: "Payment cancelled",
-      });
-    }
+  if (response === "success") {
+    return res.redirect(`${config.frontend_url}/payment/success`);
+  }
+
+  if (response === "cancel") {
+    return res.redirect(`${config.frontend_url}/payment/cancel`);
+  }
+
+  if (response === "failed") {
+    return res.redirect(`${config.frontend_url}/payment/failed`);
+  }
   },
 );
 
