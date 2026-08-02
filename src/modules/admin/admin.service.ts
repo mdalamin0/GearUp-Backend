@@ -1,24 +1,96 @@
+import { Prisma } from "../../../generated/prisma/client";
 import { Role, UserStatus } from "../../../generated/prisma/enums";
 import { GearItemWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
 import { IGearItemsQuery } from "../gearItem/gearItem.interface";
+import { IUserQuery } from "./admin.interface";
 
-const getAllUsers = async () => {
-  const users = await prisma.user.findMany({
-    where: {
+const getAllUsers = async (query: IUserQuery) => {
+  const limit = query.limit ? Number(query.limit) : 10;
+  const page = query.page ? Number(query.page) : 1;
+  const skip = (page - 1) * limit;
+
+  const sortBy = query.sortBy ? query.sortBy : "createdAt";
+ const sortOrder = query.sortOrder === "asc" ? "asc" : "desc";
+
+  const andConditions: Prisma.UserWhereInput[] = [
+    {
       role: {
         not: Role.ADMIN,
       },
     },
-    omit: {
-      password: true,
-    },
-    orderBy: {
-      createdAt: "desc",
+  ];
+
+  if (query.searchTerm) {
+    andConditions.push({
+      OR: [
+        {
+          name: {
+            contains: query.searchTerm,
+            mode: "insensitive",
+          },
+        },
+        {
+          email: {
+            contains: query.searchTerm,
+            mode: "insensitive",
+          },
+        },
+      ],
+    });
+  }
+
+  if (query.role) {
+    andConditions.push({
+      role: query.role as Role,
+    });
+  }
+
+  if (query.status) {
+    andConditions.push({
+      status: query.status as UserStatus,
+    });
+  }
+
+  const totalUsers = await prisma.user.count({
+    where: {
+      AND: andConditions,
     },
   });
 
-  return users;
+  const users = await prisma.user.findMany({
+    where: {
+      AND: andConditions,
+    },
+
+    take: limit,
+    skip,
+
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      status: true,
+      createdAt: true,
+      updatedAT: true,
+    },
+  });
+
+  return {
+    meta: {
+      page,
+      limit,
+      total: totalUsers,
+      totalPage: Math.ceil(totalUsers / limit),
+    },
+
+    data: users,
+  };
 };
 
 const updateUserStatus = async (userId: string, status: UserStatus) => {

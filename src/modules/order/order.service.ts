@@ -126,7 +126,7 @@ const getProviderOrdersFromDB = async (providerId: string) => {
       },
     },
     include: {
-      customer: true,
+      customer: { omit: { password: true } },
       gearItem: true,
     },
     orderBy: {
@@ -195,7 +195,7 @@ const updateOrderStatus = async (
         data: {
           stock: {
             increment: order.quantity,
-          }, 
+          },
         },
       });
     }
