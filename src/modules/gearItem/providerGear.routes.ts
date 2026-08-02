@@ -6,6 +6,7 @@ import { Role } from "../../../generated/prisma/enums";
 const router = Router();
 
 router.post("/", auth(Role.PROVIDER), gearItemController.createGearItem)
+router.get("/", auth(Role.PROVIDER), gearItemController.getAllProviderGear)
 router.put("/:id", auth(Role.PROVIDER), gearItemController.updateGearItem)
 router.delete("/:id", auth(Role.PROVIDER), gearItemController.deleteGear)
 

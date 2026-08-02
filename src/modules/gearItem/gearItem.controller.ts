@@ -31,6 +31,18 @@ const getAllGear = catchAsync(
   },
 );
 
+
+
+const getAllProviderGear = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const providerId = req.user?.id;
+
+    const result = await gearItemServices.getAllProviderGear(providerId as string);
+
+    sendResponse(res, { message: "Gears retribe successfully", data: result });
+  },
+);
+
 const getAllGearBrands = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
 
@@ -87,6 +99,7 @@ export const gearItemController = {
   createGearItem,
   getAllGear,
   getSingleGearItem,
+  getAllProviderGear,
   getAllGearBrands,
   updateGearItem,
   deleteGear,
