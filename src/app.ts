@@ -13,6 +13,8 @@ import { orderRoutes } from "./modules/order/order.route";
 import { adminRoutes } from "./modules/admin/admin.route";
 import { paymentRoutes } from "./modules/payment/payment.route";
 import { reviewRoutes } from "./modules/review/review.route";
+import { homeRoutes } from "./modules/home/home.route";
+
 
 const app: Application = express();
 
@@ -48,6 +50,7 @@ app.use("/api", orderRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/home/stats", homeRoutes);
 
 
 app.use(notFound)
