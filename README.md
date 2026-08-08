@@ -113,6 +113,7 @@ The Outdoor Gear Rental API allows customers to rent outdoor equipment, provider
 |---------|----------|
 | POST | `/api/auth/register` |
 | POST | `/api/auth/login` |
+| POST | `/api/auth/google` |
 | GET | `/api/auth/me` |
 
 ### Categories
@@ -176,6 +177,13 @@ The Outdoor Gear Rental API allows customers to rent outdoor equipment, provider
 | PATCH | `/api/admin/:id/featured` |
 | GET | `/api/admin/gear` |
 | GET | `/api/admin/rentals` |
+
+
+### Home
+
+| Method | Endpoint |
+|---------|----------|
+| GET | `/api/home/stats` |
 
 
 ## Author

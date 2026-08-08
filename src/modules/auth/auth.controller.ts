@@ -50,17 +50,48 @@ const loginUser = catchAsync(
   },
 );
 
+const googleLogin = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const payload = req.body;
+
+    const {accessToken, refreshToken} = await authServices.googleLogin(payload);
+
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "none",
+      maxAge: 1000 * 60 * 60 * 24, // 24 hour or 1 day
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "none",
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 day
+    });
+
+    sendResponse(res, {
+      message: "User logged in successfully!",
+      data: { accessToken, refreshToken },
+    });
+  },
+);
+
 const getCurrentUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?.id;
     const result = await authServices.getCurrentUserFromDB(userId as string);
 
-    sendResponse(res, {message: "User data retrive successfully.", data: result})
+    sendResponse(res, {
+      message: "User data retrive successfully.",
+      data: result,
+    });
   },
 );
 
 export const authController = {
   createUser,
   loginUser,
-  getCurrentUser
+  googleLogin,
+  getCurrentUser,
 };

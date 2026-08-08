@@ -1,14 +1,17 @@
 model User {
-  id String @id @default(uuid())
-  name String 
-  email String @unique
-  password String
-  role  Role @default(CUSTOMER)
-  status UserStatus @default(ACTIVE)
-  gearItems GearItem[]
-  rentalOrders RentalOrder[]
-  reviews Review[]
-  
+  id            String        @id @default(uuid())
+  name          String
+  email         String        @unique
+  password      String?
+  googleId      String?       @unique
+  authProvider  AuthProvider  @default(CREDENTIALS)
+  emailVerified Boolean       @default(false)
+  role          Role          @default(CUSTOMER)
+  status        UserStatus    @default(ACTIVE)
+  gearItems     GearItem[]
+  rentalOrders  RentalOrder[]
+  reviews       Review[]
+
   createdAt DateTime @default(now())
   updatedAT DateTime @updatedAt
 

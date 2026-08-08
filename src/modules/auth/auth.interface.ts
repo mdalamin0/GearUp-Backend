@@ -6,3 +6,8 @@ export interface ICreateUser {
   password: string;
   role?: Role;
 }
+
+
+export interface IGoogleLoginPayload {
+  idToken: string;
+}
