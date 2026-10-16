@@ -49,13 +49,10 @@ const loginUser = catchAsync(
     });
   },
 );
-
 const googleLogin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload = req.body;
-
     const {accessToken, refreshToken} = await authServices.googleLogin(payload);
-
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: false,

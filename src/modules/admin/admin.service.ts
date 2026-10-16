@@ -1,9 +1,9 @@
 import { Prisma } from "../../../generated/prisma/client";
-import { Role, UserStatus } from "../../../generated/prisma/enums";
-import { GearItemWhereInput } from "../../../generated/prisma/models";
+import { OrderStatus, Role, UserStatus } from "../../../generated/prisma/enums";
+import { GearItemWhereInput, RentalOrderWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
 import { IGearItemsQuery } from "../gearItem/gearItem.interface";
-import { IUserQuery } from "./admin.interface";
+import { IRentalsQuery, IUserQuery } from "./admin.interface";
 
 const getAllUsers = async (query: IUserQuery) => {
   const limit = query.limit ? Number(query.limit) : 10;
@@ -261,8 +261,58 @@ const getAllGears = async (query: IGearItemsQuery) => {
   };
 };
 
-const getAllRentals = async () => {
+const getAllRentals = async (query: IRentalsQuery) => {
+  const limit = query.limit ? Number(query.limit) : 10;
+  const page = query.page ? Number(query.page) : 1;
+  const skip = (page - 1) * limit;
+  const sortBy = query.sortBy ? query.sortBy : "createdAt";
+  const sortOrder = query.sortOrder ? query.sortOrder : "desc";
+
+  const andConditions: RentalOrderWhereInput[] = [];
+
+  if (query.searchTerm) {
+    andConditions.push({
+      OR: [
+        {
+          customer: {
+            name: {
+              contains: query.searchTerm,
+              mode: "insensitive",
+            },
+          },
+        },
+        {
+          gearItem: {
+            title: {
+              contains: query.searchTerm,
+              mode: "insensitive",
+            },
+          },
+        },
+      ],
+    });
+  }
+
+
+
+if (query.status) {
+  andConditions.push({
+    status: query.status as OrderStatus,
+  });
+}
+
+  const totalRentals = await prisma.rentalOrder.count({
+    where: {
+      AND: andConditions,
+    },
+  });
+
   const rentals = await prisma.rentalOrder.findMany({
+    where: {
+      AND: andConditions,
+    },
+    take: limit,
+    skip,
     include: {
       customer: {
         omit: {
@@ -276,11 +326,19 @@ const getAllRentals = async () => {
       },
     },
     orderBy: {
-      createdAt: "desc",
+      [sortBy]: sortOrder,
     },
   });
 
-  return rentals;
+  return {
+    data: rentals,
+    meta: {
+      page,
+      limit,
+      total: totalRentals,
+      totalPages: Math.ceil(totalRentals / limit),
+    },
+  };
 };
 
 export const adminService = {

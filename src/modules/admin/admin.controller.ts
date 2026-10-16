@@ -64,7 +64,8 @@ const getAllGears = catchAsync(
 
 const getAllRentals = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await adminService.getAllRentals();
+  const query = req.query;
+    const result = await adminService.getAllRentals(query);
 
     sendResponse(res, {
       message: "Reantal orders retrive successfully.",

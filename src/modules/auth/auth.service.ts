@@ -7,6 +7,7 @@ import { SignOptions } from "jsonwebtoken";
 import { googleClient } from "../../lib/googleAuth";
 import { TokenPayload } from "google-auth-library";
 import { AuthProvider, Role, UserStatus } from "../../../generated/prisma/enums";
+import type { User as PrismaUser } from "../../../generated/prisma/client";
 
 const createUserIntoDB = async (payload: ICreateUser) => {
   const { name, email, password, role } = payload;
@@ -213,6 +214,8 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
     refreshToken,
   };
 };
+
+
 
 const getCurrentUserFromDB = async (userId: string) => {
   const user = await prisma.user.findUnique({
